@@ -3,8 +3,11 @@ import { StyleSheet, Text, View, ScrollView, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../constants";
 import CustomButtom from "../components/CustomButton.jsx";
-import {Redirect,router } from "expo-router";
+import { Redirect, router } from "expo-router";
+import { useGlobalContext } from "@/context/globalProvider.js";
 export default function App() {
+  const { isLoading, isLoggedIn } = useGlobalContext();
+  if (!isLoading && isLoggedIn) return <Redirect href="/home" />;
   return (
     <>
       <SafeAreaView className="bg-primary h-full">
@@ -42,7 +45,7 @@ export default function App() {
             />
           </View>
         </ScrollView>
-        <StatusBar backgroundColor="#161622" style="light"/>
+        <StatusBar backgroundColor="#161622" style="light" />
       </SafeAreaView>
     </>
   );

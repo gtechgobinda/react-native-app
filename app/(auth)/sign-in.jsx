@@ -1,19 +1,37 @@
-import { View, Text, ScrollView, Image, TextInput } from "react-native";
+import { View, Text, ScrollView, Image, TextInput, Alert } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import FormField from "../../components/FormField.jsx";
-import CustomButton from "../../components/CustomButton.jsx"
-import {Link} from "expo-router"
+import CustomButton from "../../components/CustomButton.jsx";
+import { Link, router } from "expo-router";
+import { getCurrentUser, signIn } from "../../lib/appwrite.js";
 const SignIn = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
-  const[isSubmitting,setIsSubmitting]=useState(false)
-  const submit=()=>{
 
-  }
+  const submit = async () => {
+    if (!form.email === "" || !form.password === "") {
+      Alert.alert("Error", "Please fill in all the fields");
+    }
+    setIsSubmitting(true);
+    try {
+      await signIn(form.email, form.password);
+      const result = await getCurrentUser();
+      setSourceMapRange(result);
+      setIslogged(true);
+      Alert.alert("Success", "User signed in successfully");
+      router.replace("/home");
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
+    // createUser();
+  };
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
@@ -40,15 +58,20 @@ const SignIn = () => {
             otherStyles="mt-7"
           />
           <CustomButton
-          title="Sign In"
-          handlePress={submit}
-          containerStyles="mt-7"
-          isLoading={isSubmitting}
+            title="Sign In"
+            handlePress={submit}
+            containerStyles="mt-7"
+            isLoading={isSubmitting}
           />
           <View className="justify-center pt-5 flex-row gap-2">
             <Text className="text-lg text-gray-100 font-pregular">
               Don't have account?{" "}
-              <Link href="/sign-up" className="text-lg font-psemibold text-secondary">Sign Up</Link>
+              <Link
+                href="/sign-up"
+                className="text-lg font-psemibold text-secondary"
+              >
+                Sign Up
+              </Link>
             </Text>
           </View>
         </View>
